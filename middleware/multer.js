@@ -1,21 +1,29 @@
 const multer = require("multer");
 
-// store file in memory (not disk)
+// memory storage (no disk saving)
 const storage = multer.memoryStorage();
 
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+// MIME whitelist
+const allowedMimeTypes = ["image/jpeg", "image/png"];
 
-  if (!allowedTypes.includes(file.mimetype)) {
-    return cb(new Error("Only image files are allowed"), false);
+const fileFilter = (req, file, cb) => {
+  if (!allowedMimeTypes.includes(file.mimetype)) {
+    const error = new Error(
+      "Invalid file type. Only JPEG and PNG images are allowed."
+    );
+    error.code = "INVALID_FILE_TYPE";
+    return cb(error, false);
   }
 
   cb(null, true);
 };
 
+// Multer config
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
   fileFilter,
 });
 

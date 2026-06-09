@@ -1,17 +1,24 @@
 const cloudinary = require("../config/cloudinary");
 
-const uploadFile = async (req, res) => {
+const uploadFile = async (req, res, next) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded",
+      });
     }
 
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: "uploads" },
         (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
+          if (error) {
+            error.http_code = error.http_code || 500;
+            return reject(error);
+          }
+
+          resolve(result);
         }
       );
 
@@ -19,15 +26,15 @@ const uploadFile = async (req, res) => {
     });
 
     return res.status(200).json({
+      success: true,
       message: "Upload successful",
-      secure_url: result.secure_url,
-      public_id: result.public_id,
+      data: {
+        secure_url: result.secure_url,
+        public_id: result.public_id,
+      },
     });
   } catch (err) {
-    return res.status(500).json({
-      message: "Upload failed",
-      error: err.message,
-    });
+    next(err);
   }
 };
 

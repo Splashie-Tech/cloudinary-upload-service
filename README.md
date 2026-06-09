@@ -17,6 +17,17 @@ A lightweight Express.js service that uploads image files directly to Cloudinary
 - Cloudinary account
 - `.env` variables set for Cloudinary credentials
 
+## 🔑 Cloudinary Setup
+
+Create an account and get your credentials here:
+
+👉 https://cloudinary.com/console
+
+You will need:
+- Cloud Name
+- API Key
+- API Secret
+
 ## Installation
 
 1. Clone the repository:
@@ -110,3 +121,21 @@ curl -X POST http://localhost:5000/api/upload \
 - Uploaded files are sent directly to Cloudinary and are not saved locally.
 - Ensure Cloudinary environment variables is set correctly before running the server.
 - `node_modules` and `.env` are ignored by `.gitignore`.
+
+## 🧯 Troubleshooting
+
+### 1. File too large error
+- Ensure file is under 5MB
+- Check Multer limit configuration
+
+### 2. Invalid file type
+- Only JPEG and PNG allowed
+- Check MIME type of file
+
+### 3. Cloudinary auth error
+- Verify .env credentials
+- Ensure CLOUDINARY_CLOUD_NAME, API_KEY, API_SECRET are correct
+
+### 4. Upload fails silently
+- Check server logs
+- Ensure internet connection (Cloudinary requires it)

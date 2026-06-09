@@ -1,21 +1,21 @@
 # Cloudinary Upload Service
 
-A small Express.js service for uploading images directly to Cloudinary using `multer` memory storage.
+A lightweight Express.js service that uploads image files directly to Cloudinary using `multer` memory storage.
 
 ## Features
 
-- Upload image files via HTTP POST
-- In-memory file handling with `multer`
-- Cloudinary upload streaming
+- Upload images via HTTP POST
+- In-memory file buffering with `multer`
+- Cloudinary upload stream integration
 - Accepts JPEG and PNG images only
-- 5MB upload size limit
-- Simple JSON API response with `secure_url` and `public_id`
+- 5MB maximum file size
+- Returns `secure_url` and `public_id` in JSON responses
 
 ## Requirements
 
 - Node.js 18+ (or compatible)
 - Cloudinary account
-- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`
+- `.env` variables set for Cloudinary credentials
 
 ## Installation
 
@@ -32,7 +32,7 @@ A small Express.js service for uploading images directly to Cloudinary using `mu
    npm install
    ```
 
-3. Create a `.env` file in the project root with the following variables:
+3. Create a `.env` file in the project root with these values:
 
    ```env
    CLOUDINARY_CLOUD_NAME=your_cloud_name
@@ -40,6 +40,8 @@ A small Express.js service for uploading images directly to Cloudinary using `mu
    CLOUDINARY_API_SECRET=your_api_secret
    PORT=5000
    ```
+
+   > `.env` is included in `.gitignore`, so your credentials will not be committed.
 
 ## Running the app
 
@@ -49,19 +51,19 @@ Start the server with Node:
 node server.js
 ```
 
-If you have `nodemon` installed globally or want to use the local dependency:
+Or use `nodemon` for development:
 
 ```bash
 npx nodemon server.js
 ```
 
-The server listens on `http://localhost:5000` by default.
+The server uses `PORT` from `.env`, or defaults to `5000`.
 
 ## API Endpoint
 
 ### POST /api/upload
 
-Upload a single image file using the `file` field.
+Upload a single image file with the form field `file`.
 
 #### Request
 
@@ -70,15 +72,18 @@ Upload a single image file using the `file` field.
 - Content type: `multipart/form-data`
 - Form field: `file`
 
-#### Response
+#### Successful Response
 
-- `200 OK` on success:
+- Status: `200 OK`
+- JSON body:
   - `message`: "Upload successful"
-  - `secure_url`: direct Cloudinary image URL
+  - `secure_url`: Cloudinary image URL
   - `public_id`: Cloudinary public ID
 
-- `400` when validation fails or no file is provided
-- `500` when upload fails
+#### Error Responses
+
+- `400 Bad Request` when no file is uploaded or file validation fails
+- `500 Internal Server Error` when Cloudinary upload fails
 
 ## Example curl
 
@@ -87,20 +92,21 @@ curl -X POST http://localhost:5000/api/upload \
   -F "file=@path/to/image.jpg"
 ```
 
-## File Validation
+## Validation Rules
 
-- Allowed types: `image/jpeg`, `image/png`, `image/jpg`
+- Allowed file types: `image/jpeg`, `image/png`, `image/jpg`
 - Maximum file size: `5MB`
 
 ## Project Structure
 
 - `server.js` - Express server entry point
+- `config/cloudinary.js` - Cloudinary SDK configuration
+- `middleware/multer.js` - Multer file upload configuration
 - `routes/uploadRoutes.js` - Upload route definition
 - `controllers/uploadController.js` - Cloudinary upload logic
-- `middleware/multer.js` - Multer file upload configuration
-- `config/cloudinary.js` - Cloudinary SDK configuration
 
 ## Notes
 
-- This service stores uploads directly to Cloudinary and does not save files locally.
-- Ensure your Cloudinary credentials are correct before testing uploads.
+- Uploaded files are sent directly to Cloudinary and are not saved locally.
+- Ensure Cloudinary environment variables are set correctly before running the server.
+- `node_modules` and `.env` are ignored by `.gitignore`.

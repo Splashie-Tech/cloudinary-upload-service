@@ -108,5 +108,5 @@ curl -X POST http://localhost:5000/api/upload \
 ## Notes
 
 - Uploaded files are sent directly to Cloudinary and are not saved locally.
-- Ensure Cloudinary environment variables are set correctly before running the server.
+- Ensure Cloudinary environment variables is set correctly before running the server.
 - `node_modules` and `.env` are ignored by `.gitignore`.
